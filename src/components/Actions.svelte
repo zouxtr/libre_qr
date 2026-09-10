@@ -10,14 +10,22 @@
     appState.exportSize === 2048 ? 'Ultra (2048px)' : appState.exportSize === 512 ? 'Standard (512px)' : 'High (1024px)',
   );
 
-  async function withBusy(fn, okMsg) {
+  function savedMessage(outcome, kind) {
+    if (outcome?.method === 'share') return 'Share sheet opened — choose Save Image / Files ✓';
+    if (outcome?.method === 'tab') return 'Image opened in a new tab — long-press / Share to save it ✓';
+    return `${kind} ✓`;
+  }
+
+  async function withBusy(fn, okFor) {
     if (!canAct && !appState.busy) return;
     appState.busy = true;
     appState.status = '';
     try {
       await updateQr(snapshot());
-      await fn();
-      appState.status = okMsg;
+      // fn runs synchronously in the tap chain (no await between tap and
+      // window.open/navigator.share) so mobile popup blockers allow it.
+      const outcome = await fn();
+      appState.status = typeof okFor === 'function' ? okFor(outcome) : okFor;
     } catch (e) {
       console.error(e);
       appState.status = e?.name === 'NotAllowedError'
@@ -29,8 +37,8 @@
   }
 
   const onCopy = () => withBusy(() => copyPngToClipboard(snapshot()), `QR image copied (${sizeLabel}) ✓`);
-  const onPng = () => withBusy(() => downloadPng(snapshot()), `QR downloaded as PNG (${sizeLabel}) ✓`);
-  const onSvg = () => withBusy(() => downloadSvg(snapshot()), 'QR downloaded as SVG ✓');
+  const onPng = () => withBusy(() => downloadPng(snapshot()), (o) => savedMessage(o, `QR downloaded as PNG (${sizeLabel})`));
+  const onSvg = () => withBusy(() => downloadSvg(snapshot()), (o) => savedMessage(o, 'QR downloaded as SVG'));
 </script>
 
 <div class="quality">
@@ -50,7 +58,7 @@
   <button type="button" onclick={onPng} disabled={!canAct}>⬇ PNG</button>
   <button type="button" onclick={onSvg} disabled={!canAct}>⬇ SVG</button>
 </div>
-<p class="note">Copy needs HTTPS/localhost + clipboard permission. Download always works offline.</p>
+<p class="note">Copy needs HTTPS/localhost + clipboard permission. On iPhone/iPad the file may open in a new tab or Share sheet — use Save Image / Save to Files there.</p>
 
 <style>
   .quality { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.7rem; }

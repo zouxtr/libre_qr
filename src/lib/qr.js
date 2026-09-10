@@ -53,9 +53,92 @@ const DEFAULTS = {
   ecLevel: 'M',
 };
 
-function exportSizeOf(snapshot) {
+export function exportSizeOf(snapshot) {
   const n = Number(snapshot?.exportSize);
   return [512, 1024, 2048].includes(n) ? n : 1024;
+}
+
+export function isIOS() {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  // iPadOS 13+ reports as Macintosh; touch points give it away.
+  return (
+    /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  );
+}
+
+function revokeLater(url, ms = 30_000) {
+  try {
+    setTimeout(() => URL.revokeObjectURL(url), ms);
+  } catch {
+    /* ignore */
+  }
+}
+
+function triggerAnchorDownload(url, filename) {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  // Required for Firefox: the anchor must be in the DOM.
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+/**
+ * Save a Blob cross-browser. Desktop + Android Chrome honor the `download`
+ * attribute. iOS Safari (and iOS Chrome, which uses WebKit) ignore it, so:
+ *  1. Try the Web Share API with files (native Share sheet → Save Image).
+ *  2. Otherwise open the object URL in a new tab so the user can long-press
+ *     / Share / Save via the browser UI.
+ * Must be called synchronously from the user's tap/click handler chain.
+ * Resolves to { method: 'download' | 'share' | 'tab' }.
+ */
+export async function saveBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  try {
+    // iOS ignores <a download>; prefer Share sheet when files can be shared.
+    if (
+      typeof navigator !== 'undefined' &&
+      'canShare' in navigator &&
+      'share' in navigator
+    ) {
+      try {
+        const file = new File([blob], filename, { type: blob.type });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: filename });
+          return { method: 'share', url: null };
+        }
+      } catch (err) {
+        // User dismissed the sheet → treat as done, not an error.
+        if (err?.name === 'AbortError') return { method: 'share', url: null };
+        // Otherwise fall through to anchor/tab fallbacks.
+      }
+    }
+
+    if (isIOS()) {
+      // No forced download possible: show the file; user long-presses to save.
+      const win = window.open(url, '_blank');
+      if (win) return { method: 'tab', url };
+      // Popup blocked: navigate current tab (still lets user save via UI).
+      window.location.href = url;
+      return { method: 'tab', url };
+    }
+
+    triggerAnchorDownload(url, filename);
+    return { method: 'download', url: null };
+  } finally {
+    // Revoke only when we no longer need the URL (anchor downloads copy
+    // the data synchronously; tabs need it until the user is done).
+    if (!isIOS()) revokeLater(url, 10_000);
+    else revokeLater(url, 120_000);
+  }
+}
+
+async function toBlob(raw, mime) {
+  if (raw instanceof Blob) return raw;
+  return new Blob([raw], { type: mime });
 }
 
 export function getQr() {
@@ -76,14 +159,20 @@ export function updateQr(snapshot) {
 
 export async function downloadPng(snapshot, filename = 'qrlibre-code') {
   const size = exportSizeOf(snapshot);
+  const name = `${filename}-${size}px.png`;
   const hiRes = new QRCodeStyling({ ...buildOptions(snapshot, size), type: 'canvas' });
-  return hiRes.download({ name: `${filename}-${size}px`, extension: 'png' });
+  const raw = await hiRes.getRawData('png');
+  const blob = await toBlob(raw, 'image/png');
+  return saveBlob(blob, name);
 }
 
 export async function downloadSvg(snapshot, filename = 'qrlibre-code') {
+  const name = `${filename}.svg`;
   const opts = { ...buildOptions(snapshot, PREVIEW_SIZE), type: 'svg' };
   const svgQr = new QRCodeStyling(opts);
-  return svgQr.download({ name: filename, extension: 'svg' });
+  const raw = await svgQr.getRawData('svg');
+  const blob = await toBlob(raw, 'image/svg+xml');
+  return saveBlob(blob, name);
 }
 
 export async function copyPngToClipboard(snapshot) {

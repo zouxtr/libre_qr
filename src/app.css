@@ -1,0 +1,63 @@
+/* LibreQR design tokens: light by default, dark via [data-theme="dark"]. */
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --input-bg: #ffffff;
+  --text-h: #0f172a;
+  --muted: #5b6474;
+  --border: #e2e8f0;
+  --accent: #4f46e5;
+  --accent-ring: rgba(79, 70, 229, 0.22);
+  --shadow: 0 10px 25px -12px rgba(15, 23, 42, 0.18), 0 4px 10px -4px rgba(15, 23, 42, 0.08);
+  --warn-bg: #fffbeb;
+  --warn-fg: #92400e;
+  --warn-border: #fcd34d;
+  --err-bg: #fef2f2;
+  --err-fg: #991b1b;
+  --err-border: #fca5a5;
+  color-scheme: light;
+  font-family: ui-sans-system, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0b1220;
+  --card: #131c31;
+  --input-bg: #0f1830;
+  --text-h: #f1f5f9;
+  --muted: #9aa7bd;
+  --border: #26334f;
+  --accent: #818cf8;
+  --accent-ring: rgba(129, 140, 248, 0.28);
+  --shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.6);
+  --warn-bg: #2a2108;
+  --warn-fg: #fcd34d;
+  --warn-border: #92600e;
+  --err-bg: #2b1215;
+  --err-fg: #fca5a5;
+  --err-border: #7f2d2d;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--muted);
+  min-height: 100svh;
+  transition: background 0.2s, color 0.2s;
+}
+
+#app { min-height: 100svh; }
+
+h1, h2, strong { text-wrap: balance; }
+
+a:focus-visible, button:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

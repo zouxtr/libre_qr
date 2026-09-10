@@ -1,0 +1,21 @@
+{
+  "name": "libre-qr",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Free, open-source, offline text-to-QR code web app. No tracking, no backend.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "qr-code-styling": "^1.9.2"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.3.0",
+    "svelte": "^5.57.0",
+    "vite": "^8.3.0"
+  }
+}

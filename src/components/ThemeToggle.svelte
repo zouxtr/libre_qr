@@ -6,7 +6,7 @@
     const dark = appState.uiTheme === 'dark' || (appState.uiTheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     appState.resolvedDark = dark;
     root.dataset.theme = dark ? 'dark' : 'light';
-    try { localStorage.setItem('libreqr-theme', appState.uiTheme); } catch { /* private mode */ }
+    try { localStorage.setItem('qrlibre-theme', appState.uiTheme); } catch { /* private mode */ }
   }
 
   function cycle() {
@@ -17,7 +17,7 @@
   $effect(() => {
     // init once + follow OS changes when in auto mode
     try {
-      const saved = localStorage.getItem('libreqr-theme');
+      const saved = localStorage.getItem('qrlibre-theme') ?? localStorage.getItem('libreqr-theme');
       if (saved === 'light' || saved === 'dark' || saved === 'auto') appState.uiTheme = saved;
     } catch { /* ignore */ }
     applyTheme();

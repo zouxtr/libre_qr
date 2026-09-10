@@ -13,5 +13,6 @@ export function snapshot() {
     cornerSquareType: appState.cornerSquareType,
     cornerDotType: appState.cornerDotType,
     ecLevel: appState.ecLevel,
+    exportSize: appState.exportSize,
   };
 }

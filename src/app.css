@@ -1,4 +1,4 @@
-/* LibreQR design tokens: light by default, dark via [data-theme="dark"]. */
+/* QRLibre design tokens: light by default, dark via [data-theme="dark"]. */
 :root {
   --bg: #f8fafc;
   --card: #ffffff;

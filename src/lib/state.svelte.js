@@ -1,6 +1,6 @@
 // Shared reactive state (Svelte 5 runes). Single source of truth for the app.
 export const appState = $state({
-  text: 'https://example.org — hello from LibreQR!',
+  text: 'https://example.org — hello from QRLibre!',
   dotType: 'rounded',
   fgColor: '#0f172a',
   bgColor: '#ffffff',
@@ -10,6 +10,7 @@ export const appState = $state({
   cornerSquareType: 'extra-rounded',
   cornerDotType: 'dot',
   ecLevel: 'M', // L | M | Q | H
+  exportSize: 1024, // PNG/copy resolution in px (SVG is vector, always sharp)
   uiTheme: 'auto', // auto | light | dark (resolved theme in `resolvedDark`)
   resolvedDark: false,
   // transient UI

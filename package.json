@@ -1,5 +1,5 @@
 {
-  "name": "libre-qr",
+  "name": "qrlibre",
   "private": true,
   "version": "1.0.0",
   "description": "Free, open-source, offline text-to-QR code web app. No tracking, no backend.",

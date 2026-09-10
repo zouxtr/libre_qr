@@ -1,10 +1,11 @@
-# LibreQR — Free Offline Text → QR Code
+# QRLibre — Free Offline Text → QR Code
 
 Single-purpose web app: type text, get a styled QR code. Inspired by KDE's QRca, as a static web app.
 
 - ✅ 100% client-side (`qr-code-styling`, bundled via npm) — works offline after first load, no backend, no API calls
 - ✅ Real-time generation, fine-tune style (dots, corners, colors, gradient)
 - ✅ Copy image (Clipboard API) + Download PNG + Download SVG
+- ✅ Image quality setting (512 / 1024 / 2048px PNG + copy; SVG stays vector-sharp)
 - ✅ Length + contrast guards, EC level L/M/Q/H selector
 - ✅ Responsive, light/dark (auto + manual), accessible, no login/tracking/ads
 

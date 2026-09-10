@@ -71,7 +71,7 @@
   <div class="brand">
     <img src="./favicon.svg" alt="" width="28" height="28" />
     <div>
-      <strong>LibreQR</strong>
+      <strong>QRLibre</strong>
       <span>free · open source · on device</span>
     </div>
   </div>
@@ -103,7 +103,7 @@
   </div>
 
   <footer>
-    <p>LibreQR is <a href="https://github.com/" rel="noreferrer">open source (MIT)</a> · built with Svelte + qr-code-styling · your text never leaves this page.</p>
+    <p>QRLibre is <a href="https://github.com/" rel="noreferrer">open source (MIT)</a> · built with Svelte + qr-code-styling · your text never leaves this page.</p>
   </footer>
 </main>
 
